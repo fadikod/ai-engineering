@@ -1,0 +1,1 @@
+Python functions are defined using the def keyword and return values using the return statement.

@@ -1,0 +1,1 @@
+Lists in Python are ordered, mutable sequences defined with square brackets.

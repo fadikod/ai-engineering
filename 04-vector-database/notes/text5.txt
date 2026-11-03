@@ -1,0 +1,1 @@
+Virtual environments isolate Python packages and dependencies between different projects.

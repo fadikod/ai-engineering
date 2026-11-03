@@ -1,0 +1,1 @@
+Dictionaries store key-value pairs and allow fast lookup by unique keys.
