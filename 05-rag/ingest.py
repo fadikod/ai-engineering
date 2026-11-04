@@ -1,11 +1,14 @@
 
 from pathlib import Path
+import chromadb  # ADDED
 
 # Locate the documents directory
 docs_path = Path("docs")
 
 # Find all Markdown files
 files = list(docs_path.glob("*.md"))
+
+all_chunks = []  # ADDED
 
 
 def extract_sections(content):
@@ -60,8 +63,6 @@ def chunks_text( text, chunk_size = 500, overlap = 100):
     return chunks
 
 
-
-
 # Read each document
 for file in files:
 
@@ -72,18 +73,56 @@ for file in files:
 
     print(f"\nFile: {file.name}")
 
-    # Display each extracted section
+    # Process each section
     for section in sections:
-        print(f"\nSection: {section['section']}")
-        print(section["content"])
+
+        chunks = chunks_text(section["content"])
+
+        # Process each chunk
+        for chunk in chunks:
+
+            chunk_data = {
+                "text": chunk,
+                "source": file.name,
+                "section": section["section"]
+            }
+
+            all_chunks.append(chunk_data)  # ADDED
 
     print("*" * 40)
 
 
-test_text = "A" * 1200
-test_chunks = chunks_text(test_text)
+# ADDED: Connect to ChromaDB
+client = chromadb.PersistentClient(path="./chroma_db")
 
-print(f"Number of chunks: {len(test_chunks)}")
+# ADDED: Create or retrieve collection
+collection = client.get_or_create_collection(
+    name="company_policies"
+)
 
-for i, chunk in enumerate(test_chunks):
-    print(f"Chunk{i+1}: {len(chunk)} characters")
+# ADDED: Prepare documents, metadata and IDs
+documents = [item["text"] for item in all_chunks]
+
+metadatas = [
+    {
+        "source": item["source"],
+        "section": item["section"]
+    }
+    for item in all_chunks
+]
+
+ids = [f"chunk_{i}" for i in range(len(all_chunks))]
+
+# ADDED: Store everything in ChromaDB
+if all_chunks:
+    collection.upsert(
+        documents=documents,
+        metadatas=metadatas,
+        ids=ids
+    )
+
+print(f"Successfully stored {len(all_chunks)} chunks in ChromaDB.")
+print(f"Total chunks in collection: {collection.count()}")
+
+
+# Your temporary chunking test can now be removed
