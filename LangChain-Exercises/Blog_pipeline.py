@@ -36,13 +36,13 @@ chain_introduction = prompt_introduction | llm | StrOutputParser()
 # 3. Separate invocation 
 
 # title_result = chain_title.invoke({"topic": "The impact of artificial intelligence on modern healthcare"})
-# print(title_result)
+# print(title_result.content)
 
-# outline_result = chain_outline.invoke({"title": title_result})
-# print(outline_result)
+# outline_result = chain_outline.invoke({"title": title_result.content})
+# print(outline_result.content)
 
-# introduction_result = chain_introduction.invoke({"outline": outline_result})
-# print(introduction_result)
+# introduction_result = chain_introduction.invoke({"outline": outline_result.content})
+# print(introduction_result.content)
 
 # Connected pipeline
 
